@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+dist/
+.vercel/
+
+# Temporary files from design and testing
+.restyle-*.png
+.viewport-check.cjs
+frontend/restyle_markup.py
+design/
+
+# Logs and system files
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,61 @@
+/** Shared Kisan Mitra design tokens, based on the Stitch exports. */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  theme: {
+    extend: {
+      colors: {
+        canvas: '#ebffe7',
+        cream: '#fff8e7',
+        surface: '#ffffff',
+        'surface-soft': '#f4faee',
+        'surface-green': '#e2fae0',
+        'surface-green-strong': '#ddf4da',
+        ink: '#0d2010',
+        'ink-muted': '#40493d',
+        line: '#bfcaba',
+        leaf: '#0d631b',
+        'leaf-bright': '#2e7d32',
+        'leaf-light': '#a3f69c',
+        terracotta: '#8d4e24',
+        harvest: '#f9a825',
+        danger: '#ba1a1a',
+        caution: '#f57c00',
+      },
+      fontFamily: {
+        sans: ['Noto Sans Devanagari', 'Noto Sans', 'sans-serif'],
+        devanagari: ['Noto Sans Devanagari', 'Noto Sans', 'sans-serif'],
+      },
+      fontSize: {
+        'display-xl': ['32px', { lineHeight: '40px', fontWeight: '700' }],
+        'display-lg': ['26px', { lineHeight: '34px', fontWeight: '700' }],
+        'title-lg': ['24px', { lineHeight: '32px', fontWeight: '700' }],
+        'title-md': ['20px', { lineHeight: '28px', fontWeight: '600' }],
+        'body-lg': ['18px', { lineHeight: '28px', fontWeight: '500' }],
+        'body-md': ['16px', { lineHeight: '24px', fontWeight: '500' }],
+        'label-md': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+      },
+      spacing: {
+        'gutter-mobile': '12px',
+        'gutter': '16px',
+        'space-xs': '6px',
+        'space-sm': '12px',
+        'space-md': '16px',
+        'space-lg': '24px',
+        'space-xl': '32px',
+      },
+      borderRadius: {
+        control: '12px',
+        card: '20px',
+        'card-lg': '24px',
+      },
+      boxShadow: {
+        card: '0 3px 6px -1px rgba(27, 46, 29, 0.08)',
+        active: '0 6px 12px -2px rgba(27, 46, 29, 0.12)',
+        float: '0 8px 24px -4px rgba(27, 46, 29, 0.18)',
+        button: '0 6px 16px -2px rgba(46, 125, 50, 0.3)',
+      },
+      maxWidth: { content: '1100px' },
+    },
+  },
+  plugins: [],
+};

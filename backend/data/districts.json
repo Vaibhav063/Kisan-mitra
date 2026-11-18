@@ -1,0 +1,14 @@
+[
+ {"id":"chhatrapati-sambhajinagar","name":{"en":"Chhatrapati Sambhajinagar","mr":"छत्रपती संभाजीनगर","hi":"छत्रपति संभाजीनगर"},"state":"Maharashtra","latitude":19.8762,"longitude":75.3433},
+ {"id":"jalna","name":{"en":"Jalna","mr":"जालना","hi":"जालना"},"state":"Maharashtra","latitude":19.8347,"longitude":75.8816},
+ {"id":"beed","name":{"en":"Beed","mr":"बीड","hi":"बीड"},"state":"Maharashtra","latitude":18.9890,"longitude":75.7601},
+ {"id":"latur","name":{"en":"Latur","mr":"लातूर","hi":"लातूर"},"state":"Maharashtra","latitude":18.4088,"longitude":76.5604},
+ {"id":"nanded","name":{"en":"Nanded","mr":"नांदेड","hi":"नांदेड"},"state":"Maharashtra","latitude":19.1383,"longitude":77.3210},
+ {"id":"parbhani","name":{"en":"Parbhani","mr":"परभणी","hi":"परभणी"},"state":"Maharashtra","latitude":19.2704,"longitude":76.7747},
+ {"id":"solapur","name":{"en":"Solapur","mr":"सोलापूर","hi":"सोलापुर"},"state":"Maharashtra","latitude":17.6599,"longitude":75.9064},
+ {"id":"pune","name":{"en":"Pune","mr":"पुणे","hi":"पुणे"},"state":"Maharashtra","latitude":18.5204,"longitude":73.8567},
+ {"id":"nashik","name":{"en":"Nashik","mr":"नाशिक","hi":"नासिक"},"state":"Maharashtra","latitude":19.9975,"longitude":73.7898},
+ {"id":"nagpur","name":{"en":"Nagpur","mr":"नागपूर","hi":"नागपुर"},"state":"Maharashtra","latitude":21.1458,"longitude":79.0882},
+ {"id":"akola","name":{"en":"Akola","mr":"अकोला","hi":"अकोला"},"state":"Maharashtra","latitude":20.7002,"longitude":77.0082},
+ {"id":"yavatmal","name":{"en":"Yavatmal","mr":"यवतमाळ","hi":"यवतमाल"},"state":"Maharashtra","latitude":20.3899,"longitude":78.1307}
+]
