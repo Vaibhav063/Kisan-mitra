@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from services.weather import DISTRICTS, district_for, get_weather
+from services.weather import DISTRICTS, district_for, get_weather, debug_weather
 from services.mandi import get_mandi
 from services.ai import generate
 
@@ -34,6 +34,10 @@ async def weather(district:str):
     try:return await get_weather(district_for(district))
     except ValueError as e: raise HTTPException(400,"Unknown district") from e
     except Exception: return {"current":{},"daily":[],"flags":[],"source":"unavailable","message":"Weather data is temporarily unavailable"}
+@app.get("/api/debug/weather")
+async def weather_debug(district:str):
+    try:return await debug_weather(district_for(district))
+    except ValueError as e: raise HTTPException(400,"Unknown district") from e
 @app.get("/api/mandi")
 async def mandi(district:str,crop:str):
     try:return await get_mandi(district_for(district),crop)
