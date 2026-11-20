@@ -1,8 +1,21 @@
 import json, os
 import re
+import logging
 from google import genai
+from services.crop_doctor import DEFAULT_MODEL, _resolve_model
 
 LANG = {"mr":"Marathi","hi":"Hindi","en":"English"}
+logger = logging.getLogger(__name__)
+
+def _log_gemini_failure(feature, error=None):
+    key=os.getenv("GEMINI_API_KEY","").strip()
+    if error is None:
+        error=RuntimeError("GEMINI_API_KEY is not configured")
+    response=getattr(error,"response",None)
+    status=getattr(error,"status_code",None) or getattr(response,"status_code",None)
+    message=str(error)
+    if key: message=message.replace(key,"[REDACTED]")
+    logger.error("Gemini %s failed: exception_type=%s http_status=%s message=%s",feature,type(error).__name__,status,message[:300])
 
 def fallback_advice(weather, mandi, language):
     messages = {
@@ -89,18 +102,28 @@ async def generate(kind, district, crop, language, weather, mandi, question=None
     fallback=fallback_advice(weather,mandi,language)
     if kind!="advice" and kind=="ask":
         basic=_fallback_ask(question,weather,mandi,language)
-        if not key: return basic
+        if not key:
+            _log_gemini_failure("ask")
+            return basic
         context={"question":question,"district":district["name"].get("en"),"crop":crop,"language":LANG.get(language,"English"),"weather":weather,"mandi":mandi}
         try:
             client=genai.Client(api_key=key)
-            response=client.models.generate_content(model=os.getenv("GEMINI_MODEL","gemini-2.0-flash"),contents=ASK_SYSTEM+"\nContext JSON: "+json.dumps(context,ensure_ascii=False),config={"temperature":0.2,"response_mime_type":"application/json"})
+            model,_,_=await _resolve_model(client,os.getenv("GEMINI_MODEL",DEFAULT_MODEL))
+            response=client.models.generate_content(model=model,contents=ASK_SYSTEM+"\nContext JSON: "+json.dumps(context,ensure_ascii=False),config={"temperature":0.2,"response_mime_type":"application/json"})
             return _normalize_ask(_clean_json(response.text))
-        except Exception: return basic
-    if not key: return fallback
+        except Exception as exc:
+            _log_gemini_failure("ask",exc)
+            return basic
+    if not key:
+        _log_gemini_failure("advice")
+        return fallback
     prompt={"district":district["name"]["en"],"crop":crop,"today":"today","weather":weather,"markets":mandi,"question":question}
     system=f"You are Kisan Mitra, friendly farm advisor for small farmers in India. Reply only in {LANG.get(language,'English')} using simple short everyday words. Use only supplied weather and mandi data. Never invent prices, dates, or weather. Never give pesticide/fertiliser dosages; direct farmers to local agriculture officer. If missing, say so honestly. Practical advice for today and next 3 days, explain reason, under 120 words."
     try:
         client=genai.Client(api_key=key)
-        response=client.models.generate_content(model=os.getenv("GEMINI_MODEL","gemini-2.0-flash"),contents=system+"\nContext JSON: "+json.dumps(prompt,ensure_ascii=False),config={"temperature":0.3,"response_mime_type":"application/json"})
+        model,_,_=await _resolve_model(client,os.getenv("GEMINI_MODEL",DEFAULT_MODEL))
+        response=client.models.generate_content(model=model,contents=system+"\nContext JSON: "+json.dumps(prompt,ensure_ascii=False),config={"temperature":0.3,"response_mime_type":"application/json"})
         result=json.loads(_clean_json(response.text)); result.setdefault("weather_flags",weather.get("flags",[])); result.setdefault("best_market",mandi.get("best_market")); result.setdefault("source_notes","Weather: Open-Meteo. Mandi: "+mandi["source"]); result.setdefault("alerts",[]); return result
-    except Exception: return fallback
+    except Exception as exc:
+        _log_gemini_failure("advice",exc)
+        return fallback

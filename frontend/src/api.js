@@ -1,2 +1,2 @@
 const base=import.meta.env.VITE_API_URL||'http://localhost:8000';
-export async function api(path,options={}){const response=await fetch(base+path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});if(!response.ok)throw new Error('request_failed');return response.json()}
+export async function api(path,options={}){const multipart=typeof FormData!=='undefined'&&options.body instanceof FormData;const headers={...(multipart?{}:{'Content-Type':'application/json'}),...(options.headers||{})};const response=await fetch(base+path,{...options,headers});if(!response.ok)throw new Error('request_failed');return response.json()}
