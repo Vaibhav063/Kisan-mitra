@@ -6,12 +6,13 @@ ROOT = Path(__file__).resolve().parents[1]
 FALLBACK = json.loads((ROOT / "data/mandi_fallback.json").read_text(encoding="utf-8"))
 CROPS = {"soybean":("Soybean","Soyabean"),"cotton":("Cotton","Cotton"),"tur":("Tur (pigeon pea)","Arhar (Tur/Red Gram)(Whole)"),"wheat":("Wheat","Wheat"),"onion":("Onion","Onion")}
 _cache = {}
+CACHE_TTL = 30 * 60
 
 async def get_mandi(district, crop):
     normalized = crop.lower()
     if normalized not in CROPS: raise ValueError("Unknown crop")
     display, commodity = CROPS[normalized]; key = (district["id"], normalized)
-    if key in _cache and time.time()-_cache[key][0] < 1800: return _cache[key][1]
+    if key in _cache and time.time()-_cache[key][0] < CACHE_TTL: return _cache[key][1]
     result = None
     api_key = os.getenv("DATA_GOV_API_KEY", "")
     if api_key:

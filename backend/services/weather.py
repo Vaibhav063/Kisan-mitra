@@ -12,7 +12,7 @@ DISTRICTS = json.loads((ROOT / "data/districts.json").read_text(encoding="utf-8"
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 MET_NORWAY_URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact"
 USER_AGENT = "KisanMitra/1.0 (hackathon project)"
-CACHE_TTL = 3 * 60 * 60
+CACHE_TTL = 15 * 60
 logger = logging.getLogger(__name__)
 
 # Values are (successful-fetch timestamp, forecast). Cached/sample responses

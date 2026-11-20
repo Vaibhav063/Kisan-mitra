@@ -1,9 +1,20 @@
-import { ArrowRight, CheckCircle, CloudSun, Leaf, MessageCircle, Store } from 'lucide-react';
+import { ArrowRight, CheckCircle, CloudSun, Leaf, MessageCircle, Store, ScanLine } from 'lucide-react';
+import { useEffect } from 'react';
 
 const appPath = '/app';
 
 export default function LandingPage() {
-  return <div className="landing-shell">
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nodes = document.querySelectorAll('.landing-hero, .landing-section, .landing-footer');
+    nodes.forEach(node => node.classList.add('reveal-pending'));
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('revealed'); observer.unobserve(entry.target); }
+    }), { threshold: 0.12 });
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+  return <div className="landing-shell"><a className="skip-link" href="#landing-main">Skip to content</a>
     <header className="landing-nav">
       <a className="landing-brand" href="/" aria-label="Kisan Mitra home">
         <span className="brandmark"><Leaf/></span>
@@ -16,19 +27,19 @@ export default function LandingPage() {
       </nav>
     </header>
 
-    <main>
+    <main id="landing-main" tabIndex="-1">
       <section className="landing-hero">
         <div className="landing-hero-copy">
           <span className="landing-kicker"><span/> FARM ADVICE, ROOTED IN YOUR PLACE</span>
-          <h1>Good farm decisions start with local information.</h1>
-          <p>Get daily crop guidance, a seven-day weather view and nearby mandi prices in Marathi, Hindi or English.</p>
+          <h1>Better farm decisions, closer to home.</h1>
+          <p>Get local crop advice, a seven-day weather forecast and nearby mandi prices in Marathi, Hindi or English.</p>
           <div className="landing-actions">
-            <a className="landing-primary" href={appPath}>Get started <ArrowRight size={20}/></a>
-            <a className="landing-secondary" href="#how-it-works">See how it works</a>
+            <a className="landing-primary" href={appPath}>Open Kisan Mitra <ArrowRight size={20}/></a>
+            <a className="landing-secondary" href="#how-it-works">How it works</a>
           </div>
           <div className="landing-promise"><CheckCircle size={19}/> Free to use · No account needed</div>
         </div>
-        <div className="landing-visual" aria-label="Kisan Mitra app preview">
+        <div className="landing-visual" role="group" aria-label="Kisan Mitra app preview">
           <div className="preview-header"><span className="preview-logo"><Leaf size={20}/></span><b>Kisan Mitra</b><span className="preview-live"><i/> Local farm view</span></div>
           <div className="preview-greeting"><span>☀️</span><div><small>YOUR FARM, TODAY</small><strong>Advice that starts with your district and crop.</strong></div></div>
           <div className="preview-feature preview-green"><span><CloudSun/></span><div><b>Weather at a glance</b><small>See the next seven days</small></div><ArrowRight size={18}/></div>
@@ -48,7 +59,7 @@ export default function LandingPage() {
       </section>
 
       <section className="landing-section how-section" id="how-it-works">
-        <div className="section-intro"><span className="landing-kicker">A SIMPLE START</span><h2>How Kisan Mitra works</h2><p>Choose a few farm details, then get information that fits your place and crop.</p></div>
+        <div className="section-intro"><span className="landing-kicker">A SIMPLE START</span><h2>Try it in 3 steps</h2><p>Choose a few farm details, then get information that fits your place and crop.</p></div>
         <div className="steps-grid">
           <article><span className="step-number">01</span><h3>Choose your language and farm</h3><p>Select a district and crop. Your choices stay in your browser.</p></article>
           <article><span className="step-number">02</span><h3>Check today and the week ahead</h3><p>See a short crop recommendation alongside local weather and risk notes.</p></article>
@@ -63,6 +74,7 @@ export default function LandingPage() {
           <article><span className="feature-icon"><CloudSun/></span><h3>Seven-day weather</h3><p>Forecast details and clear notes for rain, heat and wind risks.</p></article>
           <article><span className="feature-icon"><Store/></span><h3>Nearby mandi prices</h3><p>Compare modal, minimum and maximum prices by market.</p></article>
           <article><span className="feature-icon"><MessageCircle/></span><h3>Voice or text questions</h3><p>Ask in your selected language and listen to the response.</p></article>
+          <article><span className="feature-icon"><ScanLine/></span><h3>Crop Doctor</h3><p>Share a clear leaf photo to get a possible diagnosis and practical next steps.</p></article>
         </div>
         <div className="landing-bottom-cta"><div><span className="landing-kicker">START WITH YOUR FARM</span><h2>Let’s make today’s decisions clearer.</h2></div><a className="landing-primary" href={appPath}>Open Kisan Mitra <ArrowRight size={20}/></a></div>
       </section>

@@ -1,19 +1,48 @@
-# Kisan Mitra 🌱
+﻿# Kisan Mitra ðŸŒ±
 
-A free, multilingual farm companion for Maharashtra. Kisan Mitra combines seven-day Open-Meteo forecasts, Agmarknet mandi prices and Gemini responses, with local rule-based advice and sample mandi prices when services are unavailable. Preferences stay in this browser's local storage; there are no accounts or database.
+Kisan Mitra is a free, multilingual farm companion for small farmers. It brings local crop advice, weather forecasts, mandi prices, voice or text questions, and Crop Doctor photo guidance into one mobile-friendly app. The interface is available in Marathi, Hindi, and English.
 
-## What you need
+## The problem and who it serves
 
-- Windows 10/11, PowerShell, VS Code
-- Python 3.11 (the API is also compatible with newer Python versions)
-- Node.js LTS and npm
-- Optional free keys: Google Gemini API key from Google AI Studio, and data.gov.in API key. No key is needed for Open-Meteo.
+Small and marginal farmers, especially in rain-fed regions such as Marathwada and Vidarbha, often need to check weather, market prices, and crop guidance across different services and languages. Delayed or hard-to-understand information can make decisions about spraying, irrigation, harvesting, and selling more difficult. Kisan Mitra presents these information sources together in familiar local languages.
 
-## Run locally (PowerShell)
+## Features
 
-Open two PowerShell terminals in the project folder.
+- Daily crop advice informed by weather and mandi information, with a rule-based fallback.
+- Seven-day forecast and plain-language weather risk flags.
+- Nearby mandi price comparison, with clearly labelled sample prices when live data is unavailable.
+- Ask a farm question by typing or supported browser speech recognition, then listen to the answer.
+- Crop Doctor: upload or take a crop-leaf photo for a possible AI diagnosis and practical next steps.
+- Marathi, Hindi, and English interface; the selected district, crop, and language are stored in this browser only.
+- Responsive landing page and app, with a bottom tab bar on phones and a sidebar on wider screens.
 
-### Backend terminal
+## Architecture
+
+```text
+Browser (React + Vite + Tailwind)
+  â””â”€â”€ FastAPI backend
+       â”œâ”€â”€ Gemini: advice, Ask, and Crop Doctor
+       â”œâ”€â”€ Open-Meteo, then MET Norway: weather
+       â””â”€â”€ data.gov.in Agmarknet: mandi prices, with bundled sample fallback
+```
+
+The frontend calls the backend using `VITE_API_URL`. API keys stay on the backend. The app has no login, database, analytics, or server-side user profile. Successful backend responses are cached in memory while the browser session is open; the backend also uses small in-memory caches.
+
+## Tech stack and free tools
+
+- Frontend: React, Vite, Tailwind CSS, and Lucide icons.
+- Backend: Python 3.11+, FastAPI, and Uvicorn.
+- AI: Google Gemini through the Google Gen AI SDK.
+- Weather: Open-Meteo and MET Norway locationforecast; no weather API key is needed.
+- Market prices: data.gov.in Agmarknet API; a free API key is optional for live prices.
+- Speech: browser Web Speech API for speech input and speech synthesis for listening.
+- Hosting: Vercel for the frontend and Render for the backend, using their free offerings.
+
+## Run locally on Windows
+
+Use two PowerShell terminals from the repository folder. Copy the example environment files before editing them.
+
+### 1. Prepare and start the backend
 
 ```powershell
 Set-Location "C:\Users\VAIBHAV JANGLE\Desktop\Kisan Mitra\backend"
@@ -26,9 +55,9 @@ notepad .env
 uvicorn main:app --reload
 ```
 
-In `.env`, add your optional keys to `GEMINI_API_KEY` and `DATA_GOV_API_KEY`. Keep `ALLOWED_ORIGIN=http://localhost:5173`. Expected output includes `Uvicorn running on http://127.0.0.1:8000`. Check `http://localhost:8000/health` for `{"status":"ok"}`. If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then activate again.
+In `backend/.env`, add `GEMINI_API_KEY` for Gemini responses and optionally `DATA_GOV_API_KEY` for live mandi prices. Keep `ALLOWED_ORIGIN=http://localhost:5173` for local development. Open `http://localhost:8000/health`; the expected response is `{"status":"ok"}`. If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` and activate the environment again.
 
-### Frontend terminal
+### 2. Prepare and start the frontend
 
 ```powershell
 Set-Location "C:\Users\VAIBHAV JANGLE\Desktop\Kisan Mitra\frontend"
@@ -37,48 +66,45 @@ npm install
 npm run dev
 ```
 
-Open the localhost URL printed by Vite (usually `http://localhost:5173`). If you change `.env`, restart Vite. Without a Gemini key, advice and Ask still return rule-based responses. Without a data.gov.in key or live results, the mandi screen clearly labels sample data.
-
-## API routes
-
-- `GET /health`
-- `GET /api/districts`
-- `GET /api/weather?district=beed`
-- `GET /api/mandi?district=beed&crop=Soybean`
-- `POST /api/advice` with `{"district":"beed","crop":"Soybean","language":"mr"}`
-- `POST /api/ask` with the same fields plus `"question":"आज फवारणी करू का?"`
-
-Interactive API documentation is at `http://localhost:8000/docs` while the backend runs.
+Open the localhost URL shown by Vite, usually `http://localhost:5173`. The frontend `.env` should have `VITE_API_URL=http://localhost:8000`. Restart Vite after changing that file. The app still provides fallback advice and sample mandi data when optional providers are unavailable.
 
 ## Deploy
 
 ### Render backend
 
-1. Push this repository to GitHub. Keep `.env` files out of Git; `.gitignore` already excludes them.
-2. In Render, create a **Web Service** from the repository. Set root directory to `backend`, build command to `pip install -r requirements.txt`, start command to `uvicorn main:app --host 0.0.0.0 --port $PORT`, and select the free instance type.
-3. Add environment variables in Render: `GEMINI_API_KEY`, `GEMINI_MODEL` (optional; default `gemini-2.0-flash`), `DATA_GOV_API_KEY`, and `ALLOWED_ORIGIN` set to the exact Vercel site origin, such as `https://your-project.vercel.app`.
-4. Deploy. Check `https://YOUR-SERVICE.onrender.com/health` returns `{"status":"ok"}`. Render free services may sleep and take time to wake.
+1. Push the repository to GitHub and create a Render Web Service from it.
+2. Set the root directory to `backend`, the build command to `pip install -r requirements.txt`, and the start command to `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+3. Set `GEMINI_API_KEY`, `GEMINI_MODEL` (optional), `DATA_GOV_API_KEY` (optional), and `ALLOWED_ORIGIN` to the exact Vercel site origin.
+4. Deploy and check `https://YOUR-RENDER-SERVICE.onrender.com/health`.
+
+Backend URL: `https://YOUR-RENDER-SERVICE.onrender.com` (replace with your Render URL).
 
 ### Vercel frontend
 
-1. Import the same GitHub repository into Vercel and set the project root directory to `frontend` with the Vite framework preset.
-2. Add `VITE_API_URL=https://YOUR-SERVICE.onrender.com` (no trailing slash) in Vercel environment variables.
-3. Deploy, then update Render's `ALLOWED_ORIGIN` to the final Vercel origin and redeploy the backend if needed.
-4. Confirm both public links work without signing into the app. A Vercel preview domain needs to be explicitly allowed by the backend CORS origin.
+1. Import the GitHub repository in Vercel and set the project root to `frontend` with the Vite preset.
+2. Set `VITE_API_URL=https://YOUR-RENDER-SERVICE.onrender.com` in Vercel environment variables.
+3. Deploy, then make sure Renderâ€™s `ALLOWED_ORIGIN` matches the final Vercel URL exactly.
 
-### Keep Render awake
+Frontend URL: `https://YOUR-PROJECT.vercel.app` (replace with your Vercel URL).
 
-Create a free UptimeRobot HTTP(s) monitor for `https://YOUR-SERVICE.onrender.com/health` with a 5-minute interval. UptimeRobot can reduce cold starts but cannot guarantee instant availability.
+Renderâ€™s free service may sleep when idle. A free UptimeRobot monitor can ping the backend `/health` route every five minutes, though it cannot guarantee instant wake-up.
 
-## Keys and privacy
+## Limitations and responsible use
 
-- Backend keys go only in `backend/.env` for local use and Render environment variables for deployment.
-- `frontend/.env` contains only `VITE_API_URL`, which is a public backend address, never a secret.
-- Do not commit either `.env` file. `.env.example` files contain blank key fields.
-- The app stores language, district and crop in local storage. It does not collect personal details or use analytics.
+- District coverage currently focuses on Maharashtra; live market availability depends on Agmarknet data and its free API quota.
+- Weather and AI services can be delayed, unavailable, or incomplete. Bundled sample mandi and weather data is labelled when used.
+- Crop Doctor provides a possible visual diagnosis, not a confirmed diagnosis. AI advice can be wrong. Confirm treatment decisions and all pesticide or fertiliser dosages with your local Krishi Vigyan Kendra or agriculture officer.
+- Voice input and speech output depend on browser and device language support.
+- Render free instances may have cold starts. In-memory caches clear when the backend restarts.
+- The app has no offline mode and no persistent backend storage.
+
+## Future scope
+
+- Opt-in WhatsApp alerts for useful weather or market changes.
+- Expand district and state coverage with verified local data.
+- Explore a useful offline mode for saved forecasts and guidance.
 
 ## Credits
 
-Google Gemini · Open-Meteo · data.gov.in (Agmarknet) · Vercel · Render · Web Speech API
+Google Gemini Â· Open-Meteo Â· MET Norway Â· data.gov.in (Agmarknet) Â· Vercel Â· Render Â· Web Speech API Â· OpenAI Codex Â· Cloude
 
-AI responses can be wrong. Follow local agriculture officer guidance for serious crop issues and all pesticide/fertiliser dosages.
